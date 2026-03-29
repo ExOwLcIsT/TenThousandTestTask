@@ -5,11 +5,13 @@ import { useParams } from "react-router-dom";
 
 export default function FormFill() {
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
-  const [title, setTitle] = useState<string>("")
+  const [title, setTitle] = useState<string>("");
+  const [answers, setAnswers] = useState<
+    { questionId: string; value?: string; values?: string[] }[]
+  >([]);
   const { id } = useParams();
   useEffect(() => {
-
-    console.log("ID"+id)
+    console.log("ID" + id);
     if (!id) return;
     async function fetchForm() {
       try {
@@ -58,17 +60,63 @@ export default function FormFill() {
   if (!id) {
     return <div>No form id</div>;
   }
-  
-    console.log("ID"+id)
+
+  const updateAnswer = (
+    questionId: number,
+    value: string,
+    values?: string[],
+  ) => {
+    setAnswers((prev) =>
+      prev.map((a, i) => (i === questionId ? { ...a, value, values } : a)),
+    );
+  };
+  const submitForm = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `
+            mutation SubmitResponse($formId: ID!, $answers: [AnswerInput!]!) {
+              submitResponse(formId: $formId, answers: $answers) {
+                id
+                formId
+              }
+            }
+          `,
+          variables: {
+            formId: id,
+            answers,
+          },
+        }),
+      });
+
+      const json = await res.json();
+      if (json.errors) {
+        console.error("GraphQL errors:", json.errors);
+        return;
+      }
+
+      console.log("Submitted response:", json.data.submitResponse);
+      alert("Form submitted successfully!");
+    } catch (err) {
+      console.error("Failed to submit form:", err);
+    }
+  };
   return (
     <>
       <div className="form-filling">
         <h1>{title}</h1>
         <div className="form">
           {questions.map((question, i) => (
-            <Question key={i} question={question} />
+            <Question
+              key={i}
+              question={question}
+              onAnswer={(value, values) => updateAnswer(i, value, values)}
+            />
           ))}
         </div>
+        <button onClick={submitForm}>Submit Form</button>
       </div>
     </>
   );

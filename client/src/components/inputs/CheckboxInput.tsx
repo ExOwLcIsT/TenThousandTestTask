@@ -1,15 +1,31 @@
-export default function CheckboxInput(props: {
+type CheckInputProps = {
   choices: string[];
-  onChange: (value: string) => void;
-  value : boolean;
-}) {
+  selectedValues: string[];
+  onChange: (values: string[]) => void;
+};
+
+export default function CheckInput({ choices, selectedValues, onChange }: CheckInputProps) {
+  const handleToggle = (choice: string) => {
+    let newValues: string[];
+    if (selectedValues.includes(choice)) {
+      newValues = selectedValues.filter((v) => v !== choice);
+    } else {
+      newValues = [...selectedValues, choice];
+    }
+    onChange(newValues);
+  };
+
   return (
     <div className="input">
-      {props.choices.map((choice) => (
-        <>
-          <input checked={props.value} type="checkbox" onChange={() => props.onChange(choice)} />
+      {choices.map((choice) => (
+        <div key={choice}>
+          <input
+            type="checkbox"
+            checked={selectedValues.includes(choice)}
+            onChange={() => handleToggle(choice)}
+          />
           <label>{choice}</label>
-        </>
+        </div>
       ))}
     </div>
   );

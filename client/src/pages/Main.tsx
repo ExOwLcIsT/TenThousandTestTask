@@ -52,8 +52,8 @@ export default function FormFill() {
 
           // Ініціалізація масиву відповідей
           setAnswers(
-            form.questions.map((q: QuestionItem) => ({
-              questionId: q.id,
+            form.questions.map((q: QuestionItem, i : number) => ({
+              questionId: i,
               value: "",
               values: [],
             }))
@@ -70,10 +70,10 @@ export default function FormFill() {
   if (!id) return <div>No form id</div>;
 
   // Оновлення відповіді на питання
-  const updateAnswer = (questionId: string, value: string, values?: string[]) => {
+  const updateAnswer = (questionId: number, value: string, values?: string[]) => {
     setAnswers((prev) =>
-      prev.map((a) =>
-        a.questionId === questionId ? { ...a, value, values } : a
+      prev.map((a, i) =>
+        i === questionId ? { ...a, value, values } : a
       )
     );
   };
@@ -123,7 +123,7 @@ export default function FormFill() {
               key={i}
               question={question}
               onAnswer={(value, values) =>
-                updateAnswer(question.id, value, values)
+                updateAnswer(i, value, values)
               }
             />
           ))}
