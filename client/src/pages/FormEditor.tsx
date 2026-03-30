@@ -1,52 +1,36 @@
 import { useState } from "react";
 import QuestionEditor from "../components/QuestionEditor";
 import QuestionItem from "../types/QuestionItem";
+import { useCreateFormMutation } from "../app/api/generated";
 
 export default function FormEditor() {
   const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
+  const [createForm, { isLoading, error }] = useCreateFormMutation();
   async function publishForm() {
     if (!title) {
       alert("Form title is required");
       return;
     }
 
-
     try {
-      const res = await fetch("http://localhost:4000/graphql", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          query: `
-            mutation CreateForm($title: String!, $questions: [QuestionInput!]) {
-              createForm(title: $title, questions: $questions) {
-                id
-                title
-              }
-            }
-          `,
-          variables: {
-            title,
-            questions: questions.map((q) => ({
-              text: q.text,
-              type: q.type, 
-              choices: q.choices?.length ? q.choices : undefined,
-            })),
-          },
-        }),
-      });
-
-      const json = await res.json();
-      const createdForm = json.data.createForm;
-
-      // Optional: reset form editor
+      const result = await createForm({
+        title,
+        description: description || "", // ensure non-null
+        questions: questions.map((q) => ({
+          text: q.text,
+          type: q.type,
+          choices: q.choices?.length ? q.choices : undefined,
+        })),
+      }).unwrap();
       setTitle("");
+      setDescription("");
       setQuestions([]);
-      alert(`Form "${createdForm.title}" created!`);
+      alert(`Form "${result.createForm.title}" created!`);
     } catch (err) {
       console.error("Failed to create form", err);
       alert("Failed to create form");
-    } finally {
     }
   }
   function addQuestion() {
@@ -68,6 +52,14 @@ export default function FormEditor() {
         id="title"
         onChange={(e) => setTitle(e.target.value)}
       />
+      <br />
+      <label htmlFor="description">Form description</label>
+      <input
+        type="text"
+        id="description"
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <br />
       {questions.map((q, id) => (
         <QuestionEditor
           key={"question_" + id}

@@ -28,7 +28,7 @@ const schema = buildSchema(`
   type Form {
     id: ID!
     title: String!
-    description: String
+    description: String!
     questions: [Question!]!
   }
 
@@ -65,7 +65,7 @@ const schema = buildSchema(`
   type Mutation {
     createForm(
       title: String!
-      description: String
+      description: String!
       questions: [QuestionInput!]
     ): Form!
 
@@ -93,6 +93,7 @@ const root = {
     const form = {
       id: formId,
       title,
+      description,
       questions: (questions || []).map((q, index) => ({
         id: String(index + 1),
         formId: formId,

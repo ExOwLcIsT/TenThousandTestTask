@@ -1,4 +1,3 @@
-import { useState } from "react";
 import QuestionItem from "../types/QuestionItem";
 
 const questionTypes: readonly string[] = [
@@ -99,7 +98,6 @@ export default function QuestionEditor(props: {
           >
             Add choice
           </button>
-          <div>{props.question.choices.join(" ")}</div>
         </>
       )}
     </div>
