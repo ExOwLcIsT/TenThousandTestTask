@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
-import "./styles/forms.css";
 import Main from "./pages/Main";
 import FormEditor from "./pages/FormEditor";
 import FormFill from "./pages/FormFill";
@@ -8,8 +7,12 @@ import FormFill from "./pages/FormFill";
 function App() {
   return (
     <BrowserRouter>
-      <nav>
-        <Link to="/">Home</Link> | |{" "}
+      <nav className="nav-container nav-glass">
+        <ul className="nav-list nav-list-mobile">
+          <li className="nav-item">
+            <Link to="/">Home</Link>
+          </li>
+        </ul>
       </nav>
 
       <Routes>

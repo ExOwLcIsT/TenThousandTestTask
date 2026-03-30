@@ -11,7 +11,6 @@ export default function FormFill() {
   >([]);
   const { id } = useParams();
   useEffect(() => {
-    console.log("ID" + id);
     if (!id) return;
     async function fetchForm() {
       try {
@@ -39,7 +38,6 @@ export default function FormFill() {
 
         const json = await res.json();
 
-        console.log(json);
         if (json.errors) {
           console.error("GraphQL errors:", json.errors);
           return;
@@ -62,13 +60,19 @@ export default function FormFill() {
   }
 
   const updateAnswer = (
-    questionId: number,
+    questionId: string,
     value: string,
     values?: string[],
   ) => {
-    setAnswers((prev) =>
-      prev.map((a, i) => (i === questionId ? { ...a, value, values } : a)),
-    );
+    setAnswers((prev) => {
+      if (prev.find((a) => a.questionId === questionId) !== undefined) {
+        return prev.map((a) =>
+          a.questionId === questionId ? { ...a, value, values } : a,
+        );
+      } else {
+        return [...prev, { questionId, value, values }];
+      }
+    });
   };
   const submitForm = async () => {
     try {
@@ -90,14 +94,12 @@ export default function FormFill() {
           },
         }),
       });
-
       const json = await res.json();
       if (json.errors) {
         console.error("GraphQL errors:", json.errors);
         return;
       }
 
-      console.log("Submitted response:", json.data.submitResponse);
       alert("Form submitted successfully!");
     } catch (err) {
       console.error("Failed to submit form:", err);
@@ -108,11 +110,13 @@ export default function FormFill() {
       <div className="form-filling">
         <h1>{title}</h1>
         <div className="form">
-          {questions.map((question, i) => (
+          {questions.map((question) => (
             <Question
-              key={i}
+              key={question.id}
               question={question}
-              onAnswer={(value, values) => updateAnswer(i, value, values)}
+              onAnswer={(value, values) =>
+                updateAnswer(question.id!, value, values)
+              }
             />
           ))}
         </div>

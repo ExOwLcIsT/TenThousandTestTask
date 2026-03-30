@@ -1,4 +1,5 @@
 type QuestionItem = {
+  id?: string;
   title: string;
   text: string;
   type: string;

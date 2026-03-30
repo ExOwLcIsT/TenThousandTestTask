@@ -1,7 +1,7 @@
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 const { buildSchema } = require("graphql");
-const  cors = require("cors");
+const cors = require("cors");
 // --------------------
 // In-memory storage
 // --------------------
@@ -89,7 +89,7 @@ const root = {
 
   // Mutations
   createForm: ({ title, description, questions }) => {
-    const formId =  String(nextFormId++);
+    const formId = String(nextFormId++);
     const form = {
       id: formId,
       title,

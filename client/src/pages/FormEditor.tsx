@@ -37,9 +37,7 @@ export default function FormEditor() {
       });
 
       const json = await res.json();
-      console.log(json);
       const createdForm = json.data.createForm;
-      console.log("Form created:", createdForm);
 
       // Optional: reset form editor
       setTitle("");
@@ -83,7 +81,6 @@ export default function FormEditor() {
       ))}
       <button onClick={addQuestion}>Add question</button>
       <button onClick={publishForm}>Submit</button>
-      <div>{questions.join(" ")}</div>
     </>
   );
 }
