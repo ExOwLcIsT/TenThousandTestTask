@@ -1,127 +1,75 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Question from "../components/Question";
-import QuestionItem from "../types/QuestionItem";
 import { useParams } from "react-router-dom";
+import {
+  useGetFormQuery,
+  useSubmitResponseMutation,
+} from "../app/api/generated";
 
 export default function FormFill() {
-  const [questions, setQuestions] = useState<QuestionItem[]>([]);
-  const [title, setTitle] = useState<string>("");
-  const [answers, setAnswers] = useState<
-    { questionId: string; value?: string; values?: string[] }[]
-  >([]);
   const { id } = useParams();
-  useEffect(() => {
-    if (!id) return;
-    async function fetchForm() {
-      try {
-        const res = await fetch("http://localhost:4000/graphql", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query: `
-              query GetForm($id: ID!) {
-                form(id: $id) {
-                  id
-                  title
-                  questions {
-                    id
-                    text
-                    type
-                    choices
-                  }
-                }
-              }
-            `,
-            variables: { id },
-          }),
-        });
 
-        const json = await res.json();
+  const { data, isLoading, isError } = useGetFormQuery({ id: id! });
+  const [submitResponse] = useSubmitResponseMutation();
 
-        if (json.errors) {
-          console.error("GraphQL errors:", json.errors);
-          return;
-        }
-
-        const form = json.data.form;
-        if (form) {
-          setTitle(form.title);
-          setQuestions(form.questions);
-        }
-      } catch (err) {
-        console.error("Failed to fetch form:", err);
-      }
-    }
-
-    fetchForm();
-  }, [id]);
-  if (!id) {
-    return <div>No form id</div>;
-  }
-
+  const [answers, setAnswers] = useState<
+    { questionText: string; value?: string;}[]
+  >([]);
+  if (!id) return <div>No form id</div>;
   const updateAnswer = (
-    questionId: string,
+    questionText: string,
     value: string,
     values?: string[],
   ) => {
     setAnswers((prev) => {
-      if (prev.find((a) => a.questionId === questionId) !== undefined) {
+      const existing = prev.find((a) => a.questionText === questionText);
+      if (existing) {
         return prev.map((a) =>
-          a.questionId === questionId ? { ...a, value, values } : a,
+          a.questionText === questionText ? { ...a, value, values } : a,
         );
       } else {
-        return [...prev, { questionId, value, values }];
+        return [...prev, { questionText, value, values }];
       }
     });
   };
+
   const submitForm = async () => {
     try {
-      const res = await fetch("http://localhost:4000/graphql", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          query: `
-            mutation SubmitResponse($formId: ID!, $answers: [AnswerInput!]!) {
-              submitResponse(formId: $formId, answers: $answers) {
-                id
-                formId
-              }
-            }
-          `,
-          variables: {
-            formId: id,
-            answers,
-          },
-        }),
-      });
-      const json = await res.json();
-      if (json.errors) {
-        console.error("GraphQL errors:", json.errors);
-        return;
-      }
-
+      await submitResponse({ formId: id, answers }).unwrap();
       alert("Form submitted successfully!");
     } catch (err) {
       console.error("Failed to submit form:", err);
+      alert("Failed to submit form");
     }
   };
+
+  if (isLoading) return <div>Loading form...</div>;
+  if (isError) return <div>Error loading form</div>;
+  if (!data?.form) return <div>Form not found</div>;
+
+  const form = data.form;
+
   return (
-    <>
-      <div className="form-filling">
-        <h1>{title}</h1>
-        <div className="form">
-          {questions.map((question) => (
-            <Question
-              key={question.id}
-              question={question}
-              onAnswer={(value, values) =>
-                updateAnswer(question.id!, value, values)
-              }
-            />
-          ))}
-        </div>
-        <button onClick={submitForm}>Submit Form</button>
+    <div className="form">
+      <h1>{form.title}</h1>
+      <p>{form.description}</p>
+      <div className="form-container">
+        {form.questions.map((question) => (
+          <Question
+            key={question.id}
+            question={{
+              id: question.id,
+              text: question.text,
+              type: question.type,
+              choices: question.choices ?? [],
+            }}
+            onAnswer={(value, values) =>
+              updateAnswer(question.text, value, values)
+            }
+          />
+        ))}
       </div>
-    </>
+      <button onClick={submitForm}>Submit Form</button>
+    </div>
   );
 }

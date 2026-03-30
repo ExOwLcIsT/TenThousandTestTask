@@ -3,6 +3,7 @@ import "./App.css";
 import Main from "./pages/Main";
 import FormEditor from "./pages/FormEditor";
 import FormFill from "./pages/FormFill";
+import FormResponses from "./pages/FormResponses";
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/form/create" element={<FormEditor />} />
-        <Route path="/form/:id" element={<FormFill />} />
+        <Route path="/form/:id/fill" element={<FormFill />} />
+        <Route path="/form/:id/responses" element={<FormResponses />} />
       </Routes>
     </BrowserRouter>
   );

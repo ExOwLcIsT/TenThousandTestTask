@@ -33,9 +33,10 @@ const schema = buildSchema(`
   }
 
   type Answer {
-    questionId: ID!
+    questionText: String!
     value: String
     values: [String!]
+
   }
 
   type Response {
@@ -51,7 +52,7 @@ const schema = buildSchema(`
   }
 
   input AnswerInput {
-    questionId: ID!
+    questionText: String!
     value: String
     values: [String!]
   }
@@ -73,6 +74,8 @@ const schema = buildSchema(`
       formId: ID!
       answers: [AnswerInput!]!
     ): Response!
+
+    
   }
 `);
 

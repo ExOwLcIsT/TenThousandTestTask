@@ -30,13 +30,13 @@ export type Scalars = {
 
 export type Answer = {
   __typename?: "Answer";
-  questionId: Scalars["ID"]["output"];
+  questionText: Scalars["String"]["output"];
   value?: Maybe<Scalars["String"]["output"]>;
   values?: Maybe<Array<Scalars["String"]["output"]>>;
 };
 
 export type AnswerInput = {
-  questionId: Scalars["ID"]["input"];
+  questionText: Scalars["String"]["input"];
   value?: InputMaybe<Scalars["String"]["input"]>;
   values?: InputMaybe<Array<Scalars["String"]["input"]>>;
 };
@@ -162,6 +162,24 @@ export type CreateFormMutation = {
   };
 };
 
+export type GetResponsesQueryVariables = Exact<{
+  formId: Scalars["ID"]["input"];
+}>;
+
+export type GetResponsesQuery = {
+  __typename?: "Query";
+  responses: Array<{
+    __typename?: "Response";
+    id: string;
+    formId: string;
+    answers: Array<{
+      __typename?: "Answer";
+      questionText: string;
+      value?: string | null;
+    }>;
+  }>;
+};
+
 export const GetFormsDocument = `
     query GetForms {
   forms {
@@ -203,6 +221,18 @@ export const CreateFormDocument = `
   }
 }
     `;
+export const GetResponsesDocument = `
+    query GetResponses($formId: ID!) {
+  responses(formId: $formId) {
+    id
+    formId
+    answers {
+      questionText
+      value
+    }
+  }
+}
+    `;
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -223,6 +253,9 @@ const injectedRtkApi = api.injectEndpoints({
         query: (variables) => ({ document: CreateFormDocument, variables }),
       },
     ),
+    GetResponses: build.query<GetResponsesQuery, GetResponsesQueryVariables>({
+      query: (variables) => ({ document: GetResponsesDocument, variables }),
+    }),
   }),
 });
 
@@ -234,4 +267,6 @@ export const {
   useLazyGetFormQuery,
   useSubmitResponseMutation,
   useCreateFormMutation,
+  useGetResponsesQuery,
+  useLazyGetResponsesQuery,
 } = injectedRtkApi;

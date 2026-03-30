@@ -38,3 +38,16 @@ mutation CreateForm(
     description
   }
 }
+
+
+
+query GetResponses($formId: ID!) {
+  responses(formId: $formId) {
+    id
+    formId
+    answers {
+      questionText
+      value
+    }
+  }
+}

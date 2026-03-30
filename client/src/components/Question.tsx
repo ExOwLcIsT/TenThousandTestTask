@@ -3,27 +3,16 @@ import QuestionItem from "../types/QuestionItem";
 import TextInput from "./inputs/TextInput";
 import DateInput from "./inputs/DateInput";
 import RadioInput from "./inputs/RadioInput";
-import CheckboxInput from "./inputs/CheckboxInput"; 
+import CheckboxInput from "./inputs/CheckboxInput";
 
 type QuestionProps = {
   question: QuestionItem;
   onAnswer: (value: string, values?: string[]) => void;
 };
 
-export default function Question({
-  question,
-  onAnswer
-}: QuestionProps) {
+export default function Question({ question, onAnswer }: QuestionProps) {
   const [answer, setAnswer] = useState<string>("");
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (question.type === "checkbox") {
-      onAnswer("", selectedValues);
-    } else {
-      onAnswer(answer);
-    }
-  }, [answer, selectedValues]);
 
   return (
     <div className="question">
@@ -32,23 +21,42 @@ export default function Question({
       {
         {
           text: (
-            <TextInput value={answer} onChange={(value) => setAnswer(value)} />
+            <TextInput
+              value={answer}
+              onChange={(value) => {
+                setAnswer(value);
+                onAnswer(value);
+              }}
+            />
           ),
           date: (
-            <DateInput value={answer} onChange={(value) => setAnswer(value)} />
+            <DateInput
+              value={answer}
+              onChange={(value) => {
+                setAnswer(value);
+                onAnswer(value);
+              }}
+            />
           ),
           radio: (
             <RadioInput
               name={question.text}
               choices={question.choices}
-              onChange={(value) => setAnswer(value)}
+              onChange={(value) => {
+                setAnswer(value);
+                onAnswer(value);
+              }}
             />
           ),
-          checkbox: (
+          checkboxes: (
             <CheckboxInput
               choices={question.choices}
               selectedValues={selectedValues}
-              onChange={(values) => setSelectedValues(values)}
+              onChange={(values) => {
+                console.log(values)
+                setSelectedValues(values);
+                onAnswer(values.join(", "));
+              }}
             />
           ),
         }[question.type]

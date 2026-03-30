@@ -38,6 +38,10 @@
   }
 }
 
+a {
+  text-decoration: none;
+}
+
 
 .nav-container {
   max-width: 1200px;
@@ -55,7 +59,6 @@
 
 .nav-item a {
   color: #4a5568;
-  text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: 20px;
   transition: all 0.3s ease;
@@ -78,4 +81,84 @@
   color: #3182ce;
   background-color: rgba(49, 130, 206, 0.1);
   border-color: #3182ce;
+}
+
+
+
+.form {
+  width: 500px;
+  margin: 0 auto;
+  border: 2px solid rgb(100, 0, 0);
+  border-radius: 10px;
+  padding: 5px;
+  text-align: center;
+}
+
+.question {
+  width: 95%;
+  margin: 0 auto;
+  text-align: left;
+}
+
+button {
+  width: 176px;
+  height: 40px;
+  background-color: rgb(160, 42, 21);
+  color: cornsilk;
+  border-radius: 5px;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: rgb(179, 42, 18);
+
+}
+
+.form input {
+  border-radius: 5px;
+  height: 25px;
+}
+
+.form-preview-container {
+  display: flex;
+  padding: 10px;
+}
+
+.form-preview {
+  display: block;
+  width: 250px;
+  padding: 15px;
+  text-align: center;
+  border: 2px solid #282c34;
+  border-radius: 5px;
+}
+
+.form-preview:hover {
+  transform: scale(1.05);
+  transition-duration: 0.5s;
+}
+
+.form-preview a {
+  display: block;
+  text-align: center;
+  margin: 1px auto;
+  padding: 1px;
+  width: 125px;
+  height: 40px;
+  color: cornsilk;
+  background-color: rgb(160, 42, 21);
+  border-radius: 5px;
+}
+
+.form-preview a:hover {
+  background-color: rgb(179, 42, 18);
+}
+
+.create-form {
+  width: 100px;
+  margin: 0px auto;
+}
+
+.input {
+  vertical-align: middle;
 }

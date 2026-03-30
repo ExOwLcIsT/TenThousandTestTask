@@ -3,7 +3,6 @@ import { useGetFormsQuery } from "../app/api/generated";
 
 export default function Main() {
   const { data: forms, isLoading, isError } = useGetFormsQuery();
-  console.log(forms);
   return (
     <>
       <a href="/form/create">
@@ -13,6 +12,7 @@ export default function Main() {
       <br />
       <hr />
       {isLoading && <div>Forms are loading</div>}
+      <div className="form-preview-container">
       {forms?.forms.map((f) => (
         <FormPreview
           title={f.title}
@@ -21,6 +21,7 @@ export default function Main() {
           description={f.description}
         ></FormPreview>
       ))}
+        </div>
     </>
   );
 }

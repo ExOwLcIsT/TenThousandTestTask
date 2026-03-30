@@ -38,7 +38,6 @@ export default function FormEditor() {
       ...questions,
       {
         type: "text",
-        title: "",
         text: "",
         choices: [],
       },
